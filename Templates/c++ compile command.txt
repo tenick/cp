@@ -1,0 +1,11 @@
+command:
+1. g++ -c <source file>
+2. g++ -o <executable file name> <file1.o> <file2.o> ... <fileN.o>
+
+where:
+g++ = c++ compiler
+-c = compiles source code to object file
+-o = link one or more object files to a single executable file
+
+or, just:
+g++ -o <executable file name> <source file>

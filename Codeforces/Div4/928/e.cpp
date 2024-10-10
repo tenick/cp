@@ -1,0 +1,77 @@
+#include <iomanip>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cstring>
+#include <algorithm>
+#include <numeric>
+#include <map>
+#include <unordered_map>
+#include <set>
+#include <unordered_set>
+#include <cmath>
+#include <stack>
+#include <queue>
+
+using namespace std;
+
+#include <ext/pb_ds/assoc_container.hpp> // Common file
+#include <ext/pb_ds/tree_policy.hpp> // Including tree_order_statistics_node_update
+
+using namespace __gnu_pbds;
+
+typedef tree<int, null_type, less<int>, rb_tree_tag, tree_order_statistics_node_update> ordered_set;
+
+typedef long long ll;
+typedef unsigned long long ull;
+
+void solve(){
+    ll n, k;
+    cin >> n >> k;
+    ll oddCnt = (n + 1) / 2;
+    if (k <= oddCnt){
+        // just get the kth odd number
+        cout << 1 + (2 * (k - 1)) << '\n';
+        return;
+    }
+
+    ll power = 2;
+    ll total = oddCnt;
+    while (total < n){
+        ll mult = n / power;
+        if (mult % 2 == 0) mult--;
+        ll multCnt = mult / 2 + 1;
+        if (k <= total + multCnt){
+            ll pos = k - total;
+            ll odd = 1 + (2 * (pos - 1));
+            cout << power * odd << '\n';
+            break;
+        }
+        total += multCnt;
+        power *= 2;
+    }
+    
+    // int mult2 = n / 2;
+    // if (mult2 % 2 == 0) mult2--;
+    // int mult2Cnt = mult2 / 2 + 1;
+    // if (k < oddCnt + mult2Cnt){
+    //     int pos = k - oddCnt;
+    //     int odd = 1 + (2 * (pos - 1));
+    //     cout << 2 * odd << '\n';
+    // }
+
+    // int mult4 = n / 4;
+    // if (mult4 % 4 == 0) mult4--;
+    // int mult4Cnt = mult4
+}
+
+int main(){
+    ios_base::sync_with_stdio(false);cin.tie(0);cout.tie(0);
+    //std::cout << std::setprecision(9); // use it for output that requires some precision
+
+    int t=1;
+    cin >> t;
+    while (t--){
+        solve();
+    }
+}

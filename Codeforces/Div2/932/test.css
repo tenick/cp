@@ -1,0 +1,131 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+body > div {
+    height: 60vh;
+}
+
+.hero-section {
+    background-color: #1F2937;
+    display: flex;
+    flex-direction: column;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    width: 60vw;
+    margin: auto;
+    padding: 20px;
+    align-items: center;
+}
+.logo {
+    font-size: 34px;
+    color: #F9FAF8;
+    font-weight: bold;
+}
+.nav {
+    font-size: 18px;
+
+}
+ul {
+    list-style: none;
+    display: flex;
+    gap: 1em;
+    align-items: center;
+    justify-content: center;
+}
+li {
+    color: #E5E7EB;
+}
+.main-hero {
+    width: 60vw;
+    margin: auto;
+    padding: 20px;
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    align-items: center;
+}
+.sec1 {
+    width: 48%;
+}
+.sec1 > *{
+    margin: 15px 0;
+}
+.main-text {
+    font-size: 50px;
+    font-weight: bold;
+    color: #F9FAF8;
+}
+.sub-text {
+    font-size: 20px;
+    color: #E5E7EB;
+}
+.imgsec{
+    width: 48%;
+}
+img {
+    width: 100%;
+}
+button {
+    background-color: #3882F6;
+    font-size: 20px;
+    color: #E5E7EB;
+    font-weight: bold;
+    padding: 8px 30px;
+    border-radius: 10px;
+    border: none;
+}
+
+
+.section1 {
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.sec1-text {
+    font-size: 40px;
+    font-weight: bold;
+    flex-grow: 3;
+    display: flex;
+    align-items: center;
+}
+.boxes-sec1 {
+    display: flex;
+    flex-grow: 3;
+    gap: 3vw;
+}
+.boxus {
+    width: 12vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.box {
+    width: 12vw;
+    height: 12vw;
+    border: 7px solid #3882F6;
+    border-radius: 15px;
+}
+.box-text {
+    text-align: center;
+    font-size: 20px;
+    color: #1F2937;
+}
+
+
+
+.section2 {
+    background-color: #E5E7EB;
+}
+
+.last-part {
+    background-color: #fff;
+}
