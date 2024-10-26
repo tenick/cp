@@ -39,49 +39,28 @@ template <typename T> inline void bit_set(T& number, int pos) {
     number |= ((T)1 << pos);
 }
 
-bool possible(int len, int k, int& ans , const vector<int>& segs) {
-    int start = segs[0];
-    int i = 0;
-    int totallen = 0;
-    while (i < segs.size()) {
-        if (segs[i] - start + 1 <= len) {
-            i++;
-        }
-        else {
-            k--;
-            if (k == 0) {
-                ans = 1e9;
-                return false;
-            }
-            totallen += segs[i-1] - start + 1;
-            start = segs[i];
-        }
-    }
-    totallen += segs[i-1] - start + 1;
-    ans = totallen;
-    return true;
-}
-
-// binary search approach, wrong in test 7
 void solve(){
     int n, m, k;
     cin >> n >> m >> k;
     vector<int> segs(n);
     for (int& i : segs) cin >> i;
-    int l = 1, r = 1e9, ans = 1e9;
-    int currans;
-    while (l < r) { // finding smallest possible tape across, using at most k tapes
-        int mid = (l + r) / 2;
-        if (possible(mid, k, currans, segs)) {
-            r = mid-1;
-            ans = min(ans, currans);
-        }
-        else l = mid + 1;
-    }
 
-    if (possible(r, k, currans, segs))
-        ans = min(ans, currans);
-    cout << ans << '\n';
+    vector<int> segslen;
+    for (int i = 1; i < n; i++) {
+        segslen.push_back(segs[i] - segs[i-1] + 1);
+    }
+    sort(segslen.begin(), segslen.end());
+
+    int currk = n;
+    int j = 0;
+    int mintotallen = n;
+    while (currk > k) {
+        mintotallen -= 2;
+        mintotallen += segslen[j];
+        j++;
+        currk--;
+    }
+    cout << mintotallen << '\n';
 }
 
 int main(){
