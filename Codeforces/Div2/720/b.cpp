@@ -40,39 +40,22 @@ template <typename T> inline void bit_set(T& number, int pos) {
 }
 
 void solve(){
-    ll n, a, b;
-    cin >> n >> a >> b;
-    vector<ll> arr(n);
-    for(ll& i : arr) cin >> i;
-    vector<ll> ps;
-    for (ll i : arr)
-        ps.push_back(ps.empty() ? i : ps.back() + i);
-    
-    ll currLoc = 0;
-    ll currCost = 0;
-    ll ans = b*ps.back();
-    for (int i = 0; i < n; i++) {
-        ll nextLoc = arr[i];
-        ll conquerCost = b * (nextLoc - currLoc); 
-        // cout << "conquering cost = " << conquerCost << '\n';
-        currCost += conquerCost;
-        if (i < n-1) {
-            ll moveCost = a * (nextLoc - currLoc); 
-            // cout << "moving cost = " << moveCost << '\n';
-            currCost += moveCost;
-            currLoc = nextLoc;
-        }
-        // cout << "current accumulated cost = " << currCost << '\n';
-        // cout << "new location = " << currLoc << '\n';
-        ll conquerRemainingCost = b * ((ps.back() - ps[i]) - currLoc * (n - i - 1));
-        // cout << "conquering remaining cost = " << conquerRemainingCost << '\n';
-        ll currans = currCost + conquerRemainingCost;
-        // cout << "curr ans = " << currans << '\n';
-        // cout << '\n';
-        ans = min(ans, currans);
+    int n;
+    cin >> n;
+    vector<int> arr(n);
+    for (int& i : arr) cin >> i;
+
+    cout << n - 1 << '\n';
+    for (int i = 1; i < n; i++) {
+        int amin = min(arr[i], arr[i-1]);
+        int k = 0;
+        while (gcd((amin + k), amin) > 1 || (i > 1 && gcd((amin + k), arr[i-2]) > 1))
+            k++;
+
+        cout << i << ' ' << i+1 << ' ' << amin + k << ' ' << amin << '\n';
+        arr[i-1] = amin + k;
+        arr[i] = amin;
     }
-    
-    cout << ans << '\n';
 }
 
 int main(){
