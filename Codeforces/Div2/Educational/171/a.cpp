@@ -43,9 +43,9 @@ void solve(){
     int x, y, k;
     cin >> x >> y >> k;
 
-    int ax = x, ay = 0;
-    int bx = 0, by = 0;
-    // boring ahh problem A i hate geometry
+    int mind = min(x, y);
+    cout << 0 << ' ' << mind << ' ' << mind << ' ' << 0 << '\n';
+    cout << 0 << ' ' << 0 << ' ' << mind << ' ' << mind << '\n';
 }
 
 int main(){
