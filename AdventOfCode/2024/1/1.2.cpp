@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <iomanip>
 #include <iostream>
 #include <vector>
@@ -39,15 +40,32 @@ template <typename T> inline void bit_set(T& number, int pos) {
     number |= ((T)1 << pos);
 }
 
-#define ONLINE_JUDGE
+// #define ONLINE_JUDGE
 
 void solve(){
   #ifndef ONLINE_JUDGE
-  freopen("input.txt","r",stdin);
-  freopen("output.txt","w",stdout);
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
   #endif
-
-
+  vector<int> l1;
+  map<int, int> l2;
+  string line;
+  while(getline(cin, line)) {
+    if (line.empty())
+      break;
+    istringstream iss(line);
+    int n1, n2;
+    iss >> n1 >> n2;
+    l1.push_back(n1);
+    if (l2.find(n2) == l2.end())
+      l2[n2] = 0;
+    l2[n2]++;
+  }
+  ll ans = 0;
+  for (int i = 0; i < l1.size(); i++) {
+    ans += l1[i] * l2[l1[i]];
+  }
+  cout << ans << '\n';
 }
 
 int main(){
@@ -55,7 +73,7 @@ int main(){
     //std::cout << std::setprecision(9); // use it for output that requires some precision
 
     int t=1;
-    cin >> t;
+    // cin >> t;
     while (t--){
         solve();
     }
