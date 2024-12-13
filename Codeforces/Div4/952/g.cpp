@@ -67,13 +67,25 @@ ll binpow(ll a, ll b) {
 
 #define ONLINE_JUDGE
 
+ll calcWays(int k, int p) {
+  if (k > 9) 
+    return 0;
+  ll c = iceil(10, k);
+  return binpow(c, p);
+}
+
 void solve(){
   #ifndef ONLINE_JUDGE
   freopen("input.txt","r",stdin);
   freopen("output.txt","w",stdout);
   #endif
 
+  int l, r, k;
+  cin >> l >> r >> k;
 
+  ll ans = calcWays(k, r) - calcWays(k, l);
+  if (ans < 0) ans += MOD;
+  cout << ans << '\n';
 }
 
 int main(){
@@ -86,3 +98,4 @@ int main(){
         solve();
     }
 }
+
