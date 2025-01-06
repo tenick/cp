@@ -4,6 +4,7 @@
 #include <string>
 #include <cstring>
 #include <algorithm>
+#include <numeric>
 #include <map>
 #include <unordered_map>
 #include <set>
@@ -14,38 +15,90 @@
 
 using namespace std;
 
+#include <ext/pb_ds/assoc_container.hpp> // Common file
+#include <ext/pb_ds/tree_policy.hpp> // Including tree_order_statistics_node_update
+
+using namespace __gnu_pbds;
+
+typedef tree<int, null_type, less<int>, rb_tree_tag, tree_order_statistics_node_update> ordered_set;
+
 typedef long long ll;
 typedef unsigned long long ull;
 
+// use pos = 0, if you want to work with 1st bit of given number
+template <typename T> inline bool bit_check(T number, int pos) {
+    return (number >> pos) & (T)1;
+}
+template <typename T> inline void bit_toggle(T& number, int pos) {
+    number ^= ((T)1 << pos);
+}
+template <typename T> inline T bit_clear(T number, int pos) {
+    return number & ~((T)1 << pos);
+}
+template <typename T> inline void bit_set(T& number, int pos) {
+    number |= ((T)1 << pos);
+}
+
+template <typename T> inline T iceil(T a, T b) {
+  return (a + b - 1) / b;
+}
+
+#define MOD_ANSWER
+#ifdef MOD_ANSWER
+constexpr int MOD = 1e9 + 7;
+#endif
+ll binpow(ll a, ll b) {
+  ll res = 1;
+  while (b > 0) {
+    if (b % 2){
+      res *= a;
+      #ifdef MOD_ANSWER
+      res %= MOD;
+      #endif
+    } 
+    a *= a;
+    #ifdef MOD_ANSWER
+    a %= MOD;
+    #endif
+    b /= 2;
+  }
+  return res;
+}
+
+#define ONLINE_JUDGE
+
 void solve(){
-    string s;
-    int pos;
-    cin >> s >> pos;
+  #ifndef ONLINE_JUDGE
+  freopen("input.txt","r",stdin);
+  freopen("output.txt","w",stdout);
+  #endif
 
-    int lenSum = s.size();
-    char currCh = 'z';
-    char ans = 'z';
-    for (int i = 0; i < s.size(); i++){
-        cout << "at i=" << i << '\n';
-        int currLen = s.size() - i - 1;
-        if (pos <= lenSum){
-            int offset = lenSum - pos;
-            cout << "curr lensum = " << lenSum << " offset=" << offset << '\n';
-            ans = s[i + currLen - offset];
-            cout << "reached here, ans=" << ans << '\n';
-            break;
-        }
-
-        if (s[i] < s[i+1]) {
-            char temp = s[i];
-            s[i] = s[i+1];
-            s[i+1] = temp;
-        }
-        cout << " | curr s = " << s << '\n';
-
-        lenSum += currLen;
+  string s;
+  cin >> s;
+  ll pos;
+  cin >> pos;
+  ll curr = 0, currSlen = s.size(), currlen = s.size();
+  int i = 0;
+  string currstr;
+  while (i < s.size() && pos > currSlen) {
+    if (currstr.empty() || currstr.back() <= s[i]) {
+      currstr.push_back(s[i]);
+      i++;
+      continue;
     }
-    cout << ans << '\n';
+    currstr.pop_back();
+    currlen--;
+    currSlen += currlen;
+  }
+  while (pos > currSlen) {
+    currstr.pop_back();
+    currlen--;
+    currSlen += currlen;
+  }
+  if (i < s.size()) 
+    currstr += s.substr(i);
+  int j = pos - currSlen + currlen - 1;
+  cout << currstr[j];
 }
 
 int main(){
@@ -58,3 +111,4 @@ int main(){
         solve();
     }
 }
+
