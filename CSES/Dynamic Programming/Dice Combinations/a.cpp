@@ -40,7 +40,7 @@ template <typename T> inline void bit_set(T& number, int pos) {
 }
 
 template <typename T> inline T iceil(T a, T b) {
-    return (a + b - 1) / b;
+  return (a + b - 1) / b;
 }
 
 #define MOD_ANSWER
@@ -48,31 +48,77 @@ template <typename T> inline T iceil(T a, T b) {
 constexpr int MOD = 1e9 + 7;
 #endif
 ll binpow(ll a, ll b) {
-    ll res = 1;
-    while (b > 0) {
-        if (b % 2){
-            res *= a;
-#ifdef MOD_ANSWER
-            res %= MOD;
-#endif
-        } 
-        a *= a;
-#ifdef MOD_ANSWER
-        a %= MOD;
-#endif
-        b /= 2;
+  ll res = 1;
+  while (b > 0) {
+    if (b % 2){
+      res *= a;
+      #ifdef MOD_ANSWER
+      res %= MOD;
+      #endif
+    } 
+    a *= a;
+    #ifdef MOD_ANSWER
+    a %= MOD;
+    #endif
+    b /= 2;
+  }
+  return res;
+}
+
+int top_down_way(int sum) {
+    if (sum < 0)
+        return 0;
+    if (sum == 0)
+        return 1;
+
+    int ans = 0;
+    for (int dice_num = 1; dice_num <= 6; dice_num++) {
+        ans += top_down_way(sum - dice_num) % MOD;
     }
-    return res;
+
+    return ans;
+}
+
+int top_down_way_memo(int sum, vector<int>& memo) {
+    if (sum < 0)
+        return 0;
+    if (sum == 0)
+        return 1;
+    if (memo[sum] != -1)
+        return memo[sum];
+
+    int ans = 0;
+    for (int dice_num = 1; dice_num <= 6; dice_num++) {
+        ans = (ans + top_down_way_memo(sum - dice_num, memo)) % MOD;
+    }
+
+    return memo[sum] = ans;
+}
+
+int bottom_up_way(int n) {
+    vector<int> arr(n+1);
+    arr[0] = 1;
+    for (int sum = 1; sum <= n; sum++) {
+        for (int dice_num = 1; dice_num <= 6; dice_num++) {
+            if (dice_num > sum) break;
+            arr[sum] = (arr[sum - dice_num] + arr[sum]) % MOD;
+        }
+    }
+    return arr[n];
 }
 
 #define ONLINE_JUDGE
 void solve(){
-#ifndef ONLINE_JUDGE
+    #ifndef ONLINE_JUDGE
     freopen("input.txt","r",stdin);
     freopen("output.txt","w",stdout);
-#endif
+    #endif
 
+    int n;
+    cin >> n;
 
+    vector<int> memo(n+1, -1);
+    cout << top_down_way_memo(n, memo) << '\n';
 }
 
 int main(){
@@ -80,8 +126,9 @@ int main(){
     //std::cout << std::setprecision(9); // use it for output that requires some precision
 
     int t=1;
-    cin >> t;
+    //cin >> t;
     while (t--){
         solve();
     }
 }
+
