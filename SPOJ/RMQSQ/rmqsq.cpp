@@ -43,36 +43,10 @@ template <typename T> inline void bit_set(T& number, int pos) {
 template <typename T> inline T iceil(T a, T b) {
     return (a + b - 1) / b;
 }
-
 template <typename T>
 constexpr T log_b(T x, T base=2) {
     return std::log(x) / std::log(base);
 }
-
-class sparse_table {
-private:
-    vector<vector<int>> m_st;
-    function<int(int,int)> m_f;
-public:
-    sparse_table(const vector<int>& arr, bool minQ = true) {
-        int n = arr.size();
-        int LOG = log_b(n)+1;
-        m_st.assign(n, vector<int>(LOG));
-
-        m_f = minQ ? [](int a,int b){return min(a,b);}
-                 : [](int a,int b){return max(a,b);};
-
-        for (int i = 0; i < n; i++) m_st[i][0] = arr[i];
-        for (int j = 1; j < LOG; j++)
-            for (int i = 0; i < n - (1 << (j-1)); i++)
-                m_st[i][j] = m_f(m_st[i][j-1], m_st[i+(1 << (j-1))][j-1]);
-    }
-
-    int query(int l, int r) {
-        int lg = log_b(r-l+1);
-        return m_f(m_st[l][lg], m_st[r-(1 << lg)+1][lg]);
-    }
-};
 
 #define MOD_ANSWER
 #ifdef MOD_ANSWER
@@ -102,8 +76,27 @@ void solve(){
     freopen("input.txt","r",stdin);
     freopen("output.txt","w",stdout);
 #endif
+    int n;
+    cin >> n;
+    vector<int> arr(n);
+    for (int& i : arr) cin >> i;
+    
+    int q;
+    cin >> q;
+    vector<pair<int, int>> queries(q);
+    for (auto& query : queries) cin >> query.first >> query.second;
 
+    int LOG = log_b(n)+1;
+    vector<vector<int>> precomp(n, vector<int>(LOG));
+    for (int i = 0; i < n; i++) precomp[i][0] = arr[i];
+    for (int j = 1; j < LOG; j++)
+        for (int i = 0; i < n - (1 << (j-1)); i++)
+            precomp[i][j] = min(precomp[i][j-1], precomp[i+(1 << (j-1))][j-1]);
 
+    for (auto& [l, r] : queries) {
+        int minlog = log_b(r-l+1);
+        cout << min(precomp[l][minlog], precomp[r-(1 << minlog)+1][minlog]) << '\n';
+    }
 }
 
 int main(){
@@ -111,8 +104,9 @@ int main(){
     //std::cout << std::setprecision(9); // use it for output that requires some precision
 
     int t=1;
-    cin >> t;
+    // cin >> t;
     while (t--){
         solve();
     }
 }
+
