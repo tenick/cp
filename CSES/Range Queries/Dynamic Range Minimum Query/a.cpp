@@ -154,8 +154,19 @@ void solve(){
     freopen("input.txt","r",stdin);
     freopen("output.txt","w",stdout);
 #endif
-
-
+    int n, q;
+    cin >> n >> q;
+    vector<int> arr(n);
+    for (int& i : arr) cin >> i;
+    segment_tree<int, ll> segtree(arr, [](ll a, ll b){return min(a, b);}, (ll)LLONG_MAX);
+    while (q--) {
+        int op, a, b;
+        cin >> op >> a >> b;
+        if (op == 1)
+            segtree.update(a-1, b);
+        else
+            cout << segtree.query(a-1, b-1) << '\n';
+    }
 }
 
 int main(){
@@ -163,8 +174,12 @@ int main(){
     //std::cout << std::setprecision(9); // use it for output that requires some precision
 
     int t=1;
-    cin >> t;
+    // cin >> t;
     while (t--){
         solve();
     }
 }
+
+
+
+

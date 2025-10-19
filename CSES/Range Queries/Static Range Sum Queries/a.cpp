@@ -74,7 +74,7 @@ public:
     }
 };
 
-// bottom-up implementation of segment tree (no range updates for now)
+// bottom-up implementation of segment tree
 //
 // sample usage (for min operation):
 //
@@ -154,8 +154,16 @@ void solve(){
     freopen("input.txt","r",stdin);
     freopen("output.txt","w",stdout);
 #endif
-
-
+    int n, q;
+    cin >> n >> q;
+    vector<int> arr(n);
+    for (int& i : arr) cin >> i;
+    segment_tree<int, ll> segtree(arr, [](ll a, ll b){return a+b;}, (ll)0);
+    while (q--) {
+        int l, r;
+        cin >> l >> r;
+        cout << segtree.query(l-1, r-1) << '\n';
+    }
 }
 
 int main(){
@@ -163,8 +171,10 @@ int main(){
     //std::cout << std::setprecision(9); // use it for output that requires some precision
 
     int t=1;
-    cin >> t;
+    // cin >> t;
     while (t--){
         solve();
     }
 }
+
+
