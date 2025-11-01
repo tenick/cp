@@ -74,11 +74,11 @@ public:
     }
 };
 
-// defaults to point-update, iterative bottom-up segment tree (very fast)
+// defaults to point-update, iterative bottom-up segment tree
 //
-// can be a lazy segment tree (decided only during creation, can't be changed afterwards)
+// can be a lazy segment tree (decided only during creation, can't be changed after initialization)
 //
-// lazy segment tree is recursive top-down (much higher constant factor)
+// lazy segment tree is recursive top-down.
 //
 // T = type of elements of given array
 // U = type of segment tree nodes
@@ -94,27 +94,11 @@ public:
 // // range sum query + update all elements in range to `x`
 //  segment_tree<int, ll> lazy_seg_tree(
 //      arr, 
-//      [](ll left_seg_value, ll right_seg_value){return left_seg_value+right_seg_value;}, 
+//      [](ll left_seg_value, ll right_seg_value){return a+b;}, 
 //      (ll)0, 
 //      true, 
-//      [](ll parent_lazy_value, ll child_lazy_value, ll is_child_pending){ return parent_lazy_value; }, // returns resulting lazy_value[child_node]
+//      [](ll prev_lazy_value, ll new_lazy_value){ return b; }, // returns resulting lazy_value[node]
 //      [](ll prev_tree_value, ll curr_lazy_value, int l, int r) { return (ll)(r-l+1)*val;}); // returns resulting tree[node]
-
-// // range max query + add `x` to all elements in range
-// segment_tree<int, int> lazy_seg_tree_max(
-//     ps, 
-//     [](int a, int b){
-//         return max(a,b);
-//     }, 
-//     INT_MIN, 
-//     true, 
-//     [](int parent_lazy_value, int child_lazy_value, int is_child_pending){ 
-//         if (!is_child_pending) return parent_lazy_value;
-//         return parent_lazy_value+child_lazy_value; 
-//     }, // returns resulting lazy_value[child_node]
-//     [](int prev_tree_value, int curr_lazy_value, int l, int r) { 
-//         return curr_lazy_value+prev_tree_value;
-//     });
 template <typename T, typename U>
 class segment_tree {
 private:
@@ -126,7 +110,7 @@ private:
     vector<int> node_hi;
     const bool IS_LAZY;
     const function<U(U l_seg_value, U r_seg_value)> QUERY_OP;
-    const function<U(U lazy_value, U child_lazy_value, bool is_child_lazy_pending)> CHILD_LAZY_VALUE_UPDATE_OP;
+    const function<U(U prev_lazy_value, U new_lazy_value)> LAZY_VALUE_UPDATE_OP;
     const function<U(U prev_node_value, U lazy_value, int l, int r)> APPLY_LAZY_VALUE_OP;
     const U IDENTITY;
 
@@ -177,10 +161,10 @@ private:
         tree[node] = APPLY_LAZY_VALUE_OP(tree[node], lazy_value[node], l, r);
 
         if (l != r) {
-            lazy_value[node*2] = CHILD_LAZY_VALUE_UPDATE_OP(lazy_value[node], lazy_value[node*2], is_lazy_pending[node*2]);
             is_lazy_pending[node*2] = true;
-            lazy_value[node*2+1] = CHILD_LAZY_VALUE_UPDATE_OP(lazy_value[node], lazy_value[node*2+1], is_lazy_pending[node*2+1]);
+            lazy_value[node*2] = LAZY_VALUE_UPDATE_OP(lazy_value[node*2], lazy_value[node]);
             is_lazy_pending[node*2+1] = true;
+            lazy_value[node*2+1] = LAZY_VALUE_UPDATE_OP(lazy_value[node*2+1], lazy_value[node]);
         }
 
         lazy_value[node] = IDENTITY;
@@ -197,8 +181,10 @@ private:
         propagate_(node);
 
         // if god (l, r) entered into my body (i, j), at most my size
-        if (i <= l && j >= r)
+        if (i <= l && j >= r) {
+            // cout << "god entered with a value of " << tree[node] << "\n";
             return tree[node];
+        }
 
         return QUERY_OP(query_recursive_(i, j, node*2), query_recursive_(i, j, node*2+1));
     }
@@ -206,12 +192,11 @@ private:
     U update_recursive_(const int i, const int j, const int node, const U new_val) {
         int l = node_lo[node], r = node_hi[node];
 
-        // important to be here you're returning actual value for this current node, so propagate_ updates the actual value for this current node
-        propagate_(node);
-
         // if completely disjoint
         if (j < l || i > r)
             return tree[node];
+
+        propagate_(node);
 
         // if god (l, r) entered into my body (i, j), at most my size
         if (i <= l && j >= r) {
@@ -229,18 +214,18 @@ public:
         function<U(U,U)> query_op, 
         const U identity, 
         const bool is_lazy = false, 
-        function<U(U prev_val,U new_val,bool is_lazy_pending)> child_lazy_value_update_op = [](U a, U b, bool c) {return b;}, 
+        function<U(U prev_val,U new_val)> lazy_value_update_op = [](U a, U b) {return b;}, 
         function<U(U prev_tree_val,U update_val, int l,int r)> apply_lazy_value_op = [](U prev, U a, int b,int c){return a;})
         : QUERY_OP(query_op), 
             IDENTITY(identity), 
             IS_LAZY(is_lazy), 
-            CHILD_LAZY_VALUE_UPDATE_OP(child_lazy_value_update_op),
+            LAZY_VALUE_UPDATE_OP(lazy_value_update_op),
             APPLY_LAZY_VALUE_OP(apply_lazy_value_op) {
         n = arr.size();
         if (IS_LAZY) {
-            tree.resize(4*n, IDENTITY);
-            lazy_value.resize(4*n, IDENTITY);
-            is_lazy_pending.resize(4*n, false);
+            tree.resize(4*n);
+            lazy_value.resize(4*n);
+            is_lazy_pending.resize(4*n);
             node_lo.resize(4*n);
             node_hi.resize(4*n);
             init_lazy(1, 0, n-1, arr);
@@ -273,15 +258,6 @@ public:
             update_recursive_(i, j, 1, new_val);
         else throw std::runtime_error("ERROR: non-lazy segment tree can't range update\n");
     }
-
-    void to_string() {
-        cout << "####SEGMENT TREE####\n";
-        for (int node = 1; node < 2*n; node++) {
-            int l = node_lo[node], r = node_hi[node];
-            cout << "l=" << l << " r=" << r << " | " << tree[node] << " | " << lazy_value[node] << ": " << (is_lazy_pending[node] ? "pending" : "") << '\n';
-        }
-        cout << "###################\n";
-    }
 };
 
 #define MOD_ANSWER
@@ -312,8 +288,25 @@ void solve(){
     freopen("input.txt","r",stdin);
     freopen("output.txt","w",stdout);
 #endif
-
-
+    int n, q;
+    cin >> n >> q;
+    vector<int> arr(n);
+    for (int& i : arr) cin >> i;
+    segment_tree<int, ll> lazy_seg_tree(
+        arr, 
+        [](ll a, ll b){return min(a,b);}, 
+        (ll)LLONG_MAX, 
+        true, 
+        [](ll a, ll b){ return b; }, // returns resulting lazy_value[node]
+        [](ll prev_tree_value, ll curr_lazy_value, int l, int r) { return curr_lazy_value;}); // returns resulting tree[node]
+    while (q--) {
+        int op, a, b;
+        cin >> op >> a >> b;
+        if (op == 1)
+            lazy_seg_tree.point_update(a-1, b);
+        else
+            cout << lazy_seg_tree.range_query(a-1, b-1) << '\n';
+    }
 }
 
 int main(){
@@ -321,8 +314,9 @@ int main(){
     //std::cout << std::setprecision(9); // use it for output that requires some precision
 
     int t=1;
-    cin >> t;
+    // cin >> t;
     while (t--){
         solve();
     }
 }
+
